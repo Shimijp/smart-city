@@ -136,7 +136,6 @@
 
 <div class="wrap">
 
-  <!-- HOME -->
   <section id="home">
     <div class="hero">
       <span class="blob" style="width:120px;height:120px;background:var(--teal);top:-30px;left:-20px"></span>
@@ -166,7 +165,6 @@
     </div>
   </section>
 
-  <!-- REGISTER -->
   <section id="register">
     <div class="panel" style="max-width:640px;margin-inline:auto">
       <h2>רישום צוות חדש</h2>
@@ -190,7 +188,6 @@
     </div>
   </section>
 
-  <!-- TEAMS -->
   <section id="teams">
     <div class="shead">
       <h2>הצוותים שנרשמו</h2><span class="count" id="teams-count">0</span>
@@ -200,12 +197,10 @@
     <div id="teams-body"></div>
   </section>
 
-  <!-- SCORE (peer) -->
   <section id="score">
     <div id="score-body"></div>
   </section>
 
-  <!-- RESULTS -->
   <section id="results">
     <div id="results-body"></div>
   </section>
@@ -232,13 +227,72 @@ var MAX_TOTAL = CRITERIA.length*5;
 var BADGES=["🚀","💡","⚡","🌟","🛰️","🔧","🎯","🧠","🏙️","♻️","🤖","🎨","📱","🔬","🧩","🌈","🔭","🛠️"];
 var COLORS=["#2DD4BF","#FB7185","#FBBF24","#8B5CF6","#38BDF8","#34D399","#F472B6","#60A5FA","#FCA5A5","#A78BFA"];
 
-/* ===================== storage wrapper (shared + personal) ===================== */
-var _mem={}; var hasStore=(typeof window!=="undefined" && window.storage);
-var store={
-  get:async function(k,shared){ shared=shared!==false; if(hasStore){try{var r=await window.storage.get(k,shared);return r?r.value:null;}catch(e){return null;}} return (k in _mem)?_mem[k]:null; },
-  set:async function(k,v,shared){ shared=shared!==false; if(hasStore){try{await window.storage.set(k,v,shared);return;}catch(e){}} _mem[k]=v; },
-  del:async function(k,shared){ shared=shared!==false; if(hasStore){try{await window.storage.delete(k,shared);return;}catch(e){}} delete _mem[k]; },
-  list:async function(p,shared){ shared=shared!==false; if(hasStore){try{var r=await window.storage.list(p,shared);return (r&&r.keys)?r.keys:[];}catch(e){return [];}} return Object.keys(_mem).filter(function(x){return x.indexOf(p)===0;}); }
+/* ===================== storage wrapper (JSONBin integration) ===================== */
+var BIN_ID = "6a38ec9cda38895dfeea1aaf";
+var API_KEY = "$2a$10$aOzE5yjfLCaTkHlDgvW7DO/AeeDk1Om6LxlK7u55n8dXnZz6C5h/C";
+var BIN_URL = "https://api.jsonbin.io/v3/b/" + BIN_ID;
+
+var _binData = null;
+
+// Fetch latest data from JSONBin
+async function fetchBin() {
+  try {
+    var res = await fetch(BIN_URL + "/latest", {
+      headers: { "X-Master-Key": API_KEY }
+    });
+    if (res.ok) {
+      var data = await res.json();
+      _binData = data.record || {};
+    } else {
+      _binData = {};
+    }
+  } catch (e) {
+    console.error("Fetch failed", e);
+    _binData = _binData || {};
+  }
+}
+
+// Save current state back to JSONBin
+async function saveBin() {
+  try {
+    await fetch(BIN_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify(_binData)
+    });
+  } catch (e) {
+    console.error("Save failed", e);
+  }
+}
+
+var store = {
+  get: async function(k, shared) {
+    if (shared === false) return localStorage.getItem(k);
+    if (!_binData) await fetchBin();
+    return _binData[k] || null;
+  },
+  set: async function(k, v, shared) {
+    if (shared === false) { localStorage.setItem(k, v); return; }
+    await fetchBin(); // Refresh state before saving to prevent overwrites
+    _binData[k] = v;
+    await saveBin();
+  },
+  del: async function(k, shared) {
+    if (shared === false) { localStorage.removeItem(k); return; }
+    await fetchBin(); // Refresh state before deleting
+    delete _binData[k];
+    await saveBin();
+  },
+  list: async function(p, shared) {
+    if (shared === false) {
+      return Object.keys(localStorage).filter(function(x) { return x.indexOf(p) === 0; });
+    }
+    await fetchBin(); // Always refresh on list to sync state across clients
+    return Object.keys(_binData).filter(function(x) { return x.indexOf(p) === 0; });
+  }
 };
 
 /* ===================== state ===================== */
