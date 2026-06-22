@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אתגר העיר החכמה — רישום וניקוד עמיתים</title>
+<style>
+  :root{
+    --ink:#1A1A4E; --ink2:#12123A; --teal:#2DD4BF; --coral:#FB7185;
+    --amber:#FBBF24; --purple:#8B5CF6; --blue:#38BDF8;
+    --bg:#EEF1F8; --card:#FFFFFF; --soft:#F4F6FB; --text:#1E1B4B; --muted:#64748B; --line:#E2E8F0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:Arial,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 16px 70px}
+  header.top{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);color:#fff;box-shadow:0 4px 18px rgba(18,18,58,.25)}
+  .top-inner{max-width:1000px;margin:0 auto;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:bold;font-size:20px}
+  .brand .logo{width:38px;height:38px;border-radius:11px;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:20px}
+  nav.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-inline-start:auto}
+  .tab{border:0;cursor:pointer;font-family:inherit;font-size:14px;font-weight:bold;color:#cdd5f5;background:rgba(255,255,255,.08);padding:9px 14px;border-radius:999px;transition:.15s}
+  .tab:hover{background:rgba(255,255,255,.18);color:#fff}
+  .tab.active{background:var(--teal);color:#06302b}
+  section{display:none;animation:fade .35s ease}
+  section.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .hero{background:linear-gradient(135deg,var(--ink) 0%,#26266b 100%);color:#fff;border-radius:22px;padding:34px 28px;margin-top:22px;position:relative;overflow:hidden;box-shadow:0 16px 40px rgba(18,18,58,.22)}
+  .hero .blob{position:absolute;border-radius:50%;opacity:.5;filter:blur(2px)}
+  .hero h1{margin:0 0 6px;font-size:34px;line-height:1.15}
+  .hero .sub{font-size:17px;color:#ffd96b;font-weight:bold;margin-bottom:14px}
+  .hero p{margin:0 0 20px;color:#d6dbfb;font-size:15.5px;max-width:660px;line-height:1.6}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px}
+  .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .pill{background:rgba(255,255,255,.12);border:1px solid rgba(45,212,191,.5);color:#fff;font-size:13px;font-weight:bold;padding:7px 14px;border-radius:999px}
+  .btn{border:0;cursor:pointer;font-family:inherit;font-weight:bold;font-size:15px;padding:13px 22px;border-radius:13px;transition:.15s;display:inline-flex;align-items:center;gap:8px}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--teal);color:#06302b}.btn-primary:hover{background:#21c2ae}
+  .btn-amber{background:var(--amber);color:#3a2e00}.btn-amber:hover{background:#f0b414}
+  .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3)}.btn-ghost:hover{background:rgba(255,255,255,.24)}
+  .btn-light{background:var(--soft);color:var(--text);border:1px solid var(--line)}.btn-light:hover{background:#e9edf7}
+  .btn-sm{padding:8px 14px;font-size:13px;border-radius:10px}
+  .btn-danger{background:#fde8ec;color:#c01b3e}.btn-danger:hover{background:#fbd5dd}
+  .panel{background:var(--card);border-radius:18px;padding:24px;margin-top:22px;box-shadow:0 8px 26px rgba(60,72,120,.10)}
+  .panel h2{margin:0 0 4px;font-size:24px}.panel .hint{color:var(--muted);font-size:14px;margin:0 0 18px}
+  label.fld{display:block;font-weight:bold;font-size:14px;margin:16px 0 7px}
+  .req{color:var(--coral)}
+  input.txt,select.txt{width:100%;font-family:inherit;font-size:15px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--soft);color:var(--text);outline:none;transition:.15s}
+  input.txt:focus,select.txt:focus{border-color:var(--teal);background:#fff}
+  .row{display:flex;gap:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{background:#e7fbf7;color:#0c6b5e;border:1px solid #b8efe6;font-size:13.5px;font-weight:bold;padding:7px 11px;border-radius:999px;display:flex;align-items:center;gap:7px}
+  .chip button{border:0;background:transparent;color:#0c6b5e;cursor:pointer;font-size:15px;line-height:1;padding:0}
+  .err{color:#c01b3e;font-size:13.5px;font-weight:bold;margin-top:10px;min-height:18px}
+  .ok-toast{background:#e7fbf7;border:1px solid #b8efe6;color:#0c6b5e;font-weight:bold;padding:12px 16px;border-radius:12px;margin-top:16px;font-size:14.5px}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));margin-top:20px}
+  .tcard{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 6px 20px rgba(60,72,120,.10);animation:fade .35s ease;position:relative}
+  .tcard .badge{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;margin-bottom:12px}
+  .tcard h3{margin:0 0 4px;font-size:19px}
+  .tcard .meta{color:var(--muted);font-size:13px;margin-bottom:10px}
+  .tline{font-size:13.5px;margin:6px 0;display:flex;gap:7px;align-items:flex-start}
+  .tline .k{font-weight:bold;color:var(--ink)}.tline .v{color:#334155}
+  .empty{text-align:center;color:var(--muted);padding:40px 16px}
+  .empty .big{font-size:46px;margin-bottom:8px}
+  .shead{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:24px}
+  .shead h2{margin:0;font-size:25px}
+  .count{background:var(--purple);color:#fff;font-weight:bold;font-size:14px;border-radius:999px;padding:4px 13px}
+  .spacer{margin-inline-start:auto}
+  /* identity bar */
+  .youbar{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--ink),#2a2a72);color:#fff;border-radius:16px;padding:14px 18px;margin-top:20px;box-shadow:0 8px 22px rgba(18,18,58,.2);flex-wrap:wrap}
+  .youbar .em{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(255,255,255,.15)}
+  .youbar .lbl{font-size:12.5px;color:#c9d0f5}
+  .youbar .nm{font-weight:bold;font-size:18px}
+  .progress-wrap{margin-inline-start:auto;text-align:center;min-width:120px}
+  .progress-wrap .pn{font-weight:bold;font-size:14px}
+  .pbar{height:8px;border-radius:6px;background:rgba(255,255,255,.2);overflow:hidden;margin-top:5px}
+  .pbar>i{display:block;height:100%;background:var(--teal);border-radius:6px;transition:.3s}
+  /* choose your team */
+  .pick-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-top:18px}
+  .pickbtn{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;font-family:inherit;font-size:16px;font-weight:bold;color:var(--text);text-align:start;transition:.15s}
+  .pickbtn:hover{border-color:var(--teal);background:#f3fdfb}
+  .pickbtn .em{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;color:#fff;flex:0 0 auto}
+  /* score card */
+  .scard{background:var(--card);border-radius:16px;padding:18px;margin-top:16px;box-shadow:0 6px 20px rgba(60,72,120,.10)}
+  .scard .sh{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .scard .sh .em2{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;flex:0 0 auto}
+  .scard .sh h3{margin:0;font-size:19px}
+  .scard .sh .who{color:var(--muted);font-size:12.5px}
+  .scard .sh .tot{margin-inline-start:auto;text-align:center;flex:0 0 auto}
+  .scard .sh .tot .n{font-weight:bold;font-size:22px}
+  .scard .sh .tot .l{font-size:11px;color:var(--muted)}
+  .donetag{display:inline-flex;align-items:center;gap:5px;background:#e7fbf7;color:#0c6b5e;font-weight:bold;font-size:12px;padding:4px 10px;border-radius:999px;margin-top:4px}
+  .crit{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+  .crit .cl{font-weight:bold;font-size:14.5px;min-width:120px}
+  .scaler{display:flex;gap:6px;margin-inline-start:auto;flex-wrap:wrap}
+  .dot{width:38px;height:38px;border-radius:11px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-family:inherit;font-weight:bold;font-size:15px;color:var(--muted);transition:.12s}
+  .dot:hover{border-color:#cbd5e1}
+  .dot.on{color:#fff;border-color:transparent;transform:scale(1.05)}
+  /* results */
+  .rcard{background:var(--card);border-radius:16px;padding:18px;margin-top:14px;box-shadow:0 6px 20px rgba(60,72,120,.10);display:flex;flex-direction:column;gap:10px}
+  .rcard.first{box-shadow:0 10px 30px rgba(251,191,36,.30);border:1.5px solid #fde68a}
+  .rhead{display:flex;align-items:center;gap:12px}
+  .rank{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;flex:0 0 auto}
+  .rank.g1{background:#FEF3C7;color:#b45309}.rank.g2{background:#E5E9F2;color:#475569}.rank.g3{background:#F6E4D3;color:#9a5b22}.rank.g0{background:var(--soft);color:var(--muted)}
+  .rhead .em{font-size:22px}.rhead .nm{font-weight:bold;font-size:18px}
+  .rhead .votes{font-size:12px;color:var(--muted)}
+  .rtot{margin-inline-start:auto;text-align:center;flex:0 0 auto}
+  .rtot .num{font-weight:bold;font-size:24px;color:var(--ink)}.rtot .lbl{font-size:11px;color:var(--muted)}
+  .bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:6px}
+  .cchips{display:flex;flex-wrap:wrap;gap:6px}
+  .cchip{font-size:11.5px;font-weight:bold;color:#fff;border-radius:999px;padding:3px 9px}
+  /* gate */
+  .gate{max-width:380px;margin:20px auto 0;text-align:center;background:var(--card);border-radius:18px;padding:24px;box-shadow:0 10px 30px rgba(60,72,120,.12)}
+  .gate input{text-align:center;letter-spacing:6px;font-size:22px;margin-top:12px}
+  .savebar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 18px;border-radius:999px;font-size:13.5px;font-weight:bold;box-shadow:0 8px 22px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;z-index:80}
+  .savebar.show{opacity:1}
+  .small-note{color:var(--muted);font-size:12.5px;margin-top:14px;line-height:1.5}
+  @media (max-width:560px){.hero h1{font-size:27px}.brand{font-size:17px}.crit .cl{min-width:96px;font-size:13.5px}.dot{width:34px;height:34px}.panel{padding:18px}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="logo">🏙️</span><span>אתגר העיר החכמה</span></div>
+    <nav class="tabs" id="tabs">
+      <button class="tab" data-v="home">בית</button>
+      <button class="tab" data-v="register">רישום צוות</button>
+      <button class="tab" data-v="teams">הצוותים</button>
+      <button class="tab" data-v="score">ניקוד</button>
+      <button class="tab" data-v="results">תוצאות</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="hero">
+      <span class="blob" style="width:120px;height:120px;background:var(--teal);top:-30px;left:-20px"></span>
+      <span class="blob" style="width:90px;height:90px;background:var(--coral);bottom:-30px;right:30px"></span>
+      <span class="blob" style="width:60px;height:60px;background:var(--amber);top:20px;right:-10px"></span>
+      <h1>צוות החדשנות שלכן יוצא לדרך 🚀</h1>
+      <div class="sub">נרשמות, בונות, מציגות — וכל צוות מנקד את שאר הצוותים</div>
+      <p>כל קבוצה רושמת כאן את הצוות שלה ובוחרת בעיה אמיתית. בסוף, אחרי כל ההצגות, כל צוות מנקד את <b>שאר</b> הצוותים לפי הקריטריונים — והציון הסופי הוא הממוצע מכל הצוותים.</p>
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="nav('register')">רישום הצוות שלי</button>
+        <button class="btn btn-ghost" onclick="nav('score')">למסך הניקוד</button>
+      </div>
+      <div class="pillrow">
+        <span class="pill">ניקוד עמיתים</span><span class="pill">6 קריטריונים</span>
+        <span class="pill">1–5 לכל קריטריון</span><span class="pill">ממוצע הוגן</span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>איך זה עובד?</h2>
+      <p class="hint">שלושה צעדים</p>
+      <div class="grid" style="margin-top:6px">
+        <div class="tcard"><div class="badge" style="background:var(--blue)">📝</div><h3>1 · נרשמות</h3><div class="tline"><span class="v">כל צוות בוחר שם, מוסיף את חברות הקבוצה ובוחר בעיה.</span></div></div>
+        <div class="tcard"><div class="badge" style="background:var(--teal)">🛠️</div><h3>2 · בונות ומציגות</h3><div class="tline"><span class="v">יוצרות פתרון ואב-טיפוס, ומציגות פיץ' קצר מול הכיתה.</span></div></div>
+        <div class="tcard"><div class="badge" style="background:var(--amber)">🗳️</div><h3>3 · מנקדות זו את זו</h3><div class="tline"><span class="v">כל צוות מנקד את שאר הצוותים (לא את עצמו), והתוצאות מצטברות.</span></div></div>
+      </div>
+      <div class="small-note">הגינות: צוות לא יכול לנקד את עצמו, וכל קבוצה מנקדת מהמכשיר שלה. הציון של כל צוות הוא הממוצע של מה שכל שאר הצוותים נתנו לו.</div>
+    </div>
+  </section>
+
+  <!-- REGISTER -->
+  <section id="register">
+    <div class="panel" style="max-width:640px;margin-inline:auto">
+      <h2>רישום צוות חדש</h2>
+      <p class="hint">מלאו את הפרטים ולחצו "שמירת הצוות".</p>
+      <label class="fld">שם הצוות <span class="req">*</span></label>
+      <input id="f-name" class="txt" type="text" placeholder="למשל: בנות החדשנות" maxlength="40">
+      <label class="fld">חברות הצוות</label>
+      <div class="row">
+        <input id="f-member" class="txt" type="text" placeholder="שם של חברה בצוות" maxlength="30" onkeydown="if(event.key==='Enter'){addMember();event.preventDefault();}">
+        <button class="btn btn-light btn-sm" onclick="addMember()">הוסיפי</button>
+      </div>
+      <div class="chips" id="members-chips"></div>
+      <label class="fld">הבעיה שבחרנו</label>
+      <select id="f-problem" class="txt" onchange="toggleOther()"></select>
+      <input id="f-problem-other" class="txt" type="text" placeholder="כתבו את הבעיה שלכן" maxlength="60" style="display:none;margin-top:8px">
+      <label class="fld">התוצר שנבנה</label>
+      <select id="f-product" class="txt"></select>
+      <div class="err" id="reg-err"></div>
+      <button class="btn btn-primary" id="reg-btn" style="margin-top:8px;width:100%;justify-content:center" onclick="registerTeam()">שמירת הצוות</button>
+      <div id="reg-ok"></div>
+    </div>
+  </section>
+
+  <!-- TEAMS -->
+  <section id="teams">
+    <div class="shead">
+      <h2>הצוותים שנרשמו</h2><span class="count" id="teams-count">0</span>
+      <div class="spacer"></div>
+      <button class="btn btn-light btn-sm" onclick="refreshNow()">רענון 🔄</button>
+    </div>
+    <div id="teams-body"></div>
+  </section>
+
+  <!-- SCORE (peer) -->
+  <section id="score">
+    <div id="score-body"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <div id="results-body"></div>
+  </section>
+
+</div>
+
+<div class="savebar" id="savebar">נשמר ✓</div>
+
+<script>
+/* ===================== config ===================== */
+var ADMIN_PIN = "1234"; // קוד מורה לניהול (מחיקה / איפוס)
+
+var PROBLEMS = ["איחורים לשיעורים","עומס תנועה ליד בית הספר","בזבוז חשמל בכיתות","קושי למצוא כיתות וציוד","חוסר סדר בהפסקות","מודעות נמוכה למחזור","תלמידות שלבד בהפסקה","בטיחות בדרכים","תור ארוך בקפיטריה","המלצות לפעילויות אחר הצהריים","אחר (כתבו בעצמכן)"];
+var PRODUCTS = ["עוד לא החלטנו","מסך אפליקציה","פוסטר פרסומי","דגם פיזי","צ'אטבוט רעיוני","תסריט פרסומת","משחקון רעיוני"];
+var CRITERIA = [
+  {key:"creativity",label:"יצירתיות",color:"#FBBF24"},
+  {key:"clarity",label:"פתרון ברור",color:"#38BDF8"},
+  {key:"product",label:"תוצר מושקע",color:"#2DD4BF"},
+  {key:"teamwork",label:"עבודת צוות",color:"#FB7185"},
+  {key:"ai",label:"שימוש נכון ב-AI",color:"#8B5CF6"},
+  {key:"presentation",label:"הצגה מול קהל",color:"#60A5FA"}
+];
+var MAX_TOTAL = CRITERIA.length*5;
+var BADGES=["🚀","💡","⚡","🌟","🛰️","🔧","🎯","🧠","🏙️","♻️","🤖","🎨","📱","🔬","🧩","🌈","🔭","🛠️"];
+var COLORS=["#2DD4BF","#FB7185","#FBBF24","#8B5CF6","#38BDF8","#34D399","#F472B6","#60A5FA","#FCA5A5","#A78BFA"];
+
+/* ===================== storage wrapper (shared + personal) ===================== */
+var _mem={}; var hasStore=(typeof window!=="undefined" && window.storage);
+var store={
+  get:async function(k,shared){ shared=shared!==false; if(hasStore){try{var r=await window.storage.get(k,shared);return r?r.value:null;}catch(e){return null;}} return (k in _mem)?_mem[k]:null; },
+  set:async function(k,v,shared){ shared=shared!==false; if(hasStore){try{await window.storage.set(k,v,shared);return;}catch(e){}} _mem[k]=v; },
+  del:async function(k,shared){ shared=shared!==false; if(hasStore){try{await window.storage.delete(k,shared);return;}catch(e){}} delete _mem[k]; },
+  list:async function(p,shared){ shared=shared!==false; if(hasStore){try{var r=await window.storage.list(p,shared);return (r&&r.keys)?r.keys:[];}catch(e){return [];}} return Object.keys(_mem).filter(function(x){return x.indexOf(p)===0;}); }
+};
+
+/* ===================== state ===================== */
+var state={view:"home",teams:[],myTid:null,myBallot:{},ballots:{},draftMembers:[],saving:false,admin:false};
+var pollTimer=null;
+
+/* ===================== helpers ===================== */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function hash(s){var h=0;s=String(s);for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))>>>0;}return h;}
+function newTid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function colorFor(tid){return COLORS[hash(tid)%COLORS.length];}
+function badgeFor(tid){return BADGES[hash(tid+"b")%BADGES.length];}
+function teamByTid(tid){return state.teams.find(function(t){return t.tid===tid;});}
+function myBallotTotal(rated){var sc=state.myBallot[rated];if(!sc)return 0;var s=0;CRITERIA.forEach(function(c){s+=(sc[c.key]||0);});return s;}
+function myBallotDone(rated){var sc=state.myBallot[rated];if(!sc)return false;return CRITERIA.every(function(c){return sc[c.key]>=1;});}
+function toast(m){var b=document.getElementById("savebar");b.textContent=m||"נשמר ✓";b.classList.add("show");clearTimeout(b._t);b._t=setTimeout(function(){b.classList.remove("show");},1400);}
+
+/* ===================== navigation ===================== */
+function nav(v){
+  state.view=v;
+  ["home","register","teams","score","results"].forEach(function(s){document.getElementById(s).classList.toggle("show",s===v);});
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(t){t.classList.toggle("active",t.getAttribute("data-v")===v);});
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
+  if(v==="teams"){loadTeams().then(renderTeams);pollTimer=setInterval(function(){loadTeams().then(maybeRenderTeams);},8000);}
+  if(v==="score"){enterScore();pollTimer=setInterval(pollScore,9000);}
+  if(v==="results"){loadAll().then(renderResults);pollTimer=setInterval(function(){loadAll().then(renderResults);},12000);}
+}
+function refreshNow(){
+  if(state.view==="teams")loadTeams().then(renderTeams);
+  else if(state.view==="score")enterScore();
+  else if(state.view==="results")loadAll().then(renderResults);
+  toast("עודכן ✓");
+}
+
+/* ===================== data ===================== */
+async function loadTeams(){
+  var keys=await store.list("team:");var arr=[];
+  for(var i=0;i<keys.length;i++){var v=await store.get(keys[i]);if(v){try{arr.push(JSON.parse(v));}catch(e){}}}
+  arr.sort(function(a,b){return (a.createdAt||0)-(b.createdAt||0);});
+  state.teams=arr;return arr;
+}
+async function loadMyBallot(){
+  if(!state.myTid){state.myBallot={};return;}
+  var v=await store.get("ballot:"+state.myTid,true);
+  if(v){try{state.myBallot=JSON.parse(v);}catch(e){state.myBallot={};}}else{state.myBallot={};}
+}
+async function saveMyBallot(){ if(state.myTid) await store.set("ballot:"+state.myTid,JSON.stringify(state.myBallot),true); }
+async function loadAllBallots(){
+  var keys=await store.list("ballot:",true);var all={};
+  for(var i=0;i<keys.length;i++){
+    var rater=keys[i].slice("ballot:".length);
+    var v=await store.get(keys[i],true);if(!v)continue;
+    try{all[rater]=JSON.parse(v);}catch(e){}
+  }
+  state.ballots=all;return all;
+}
+async function loadAll(){ await loadTeams(); await loadAllBallots(); }
+
+/* ===================== registration ===================== */
+function fillSelects(){
+  document.getElementById("f-problem").innerHTML=PROBLEMS.map(function(x){return '<option>'+esc(x)+'</option>';}).join("");
+  document.getElementById("f-product").innerHTML=PRODUCTS.map(function(x){return '<option>'+esc(x)+'</option>';}).join("");
+}
+function toggleOther(){var sel=document.getElementById("f-problem").value;document.getElementById("f-problem-other").style.display=(sel.indexOf("אחר")===0)?"block":"none";}
+function renderMembers(){document.getElementById("members-chips").innerHTML=state.draftMembers.map(function(m,i){return '<span class="chip">'+esc(m)+'<button onclick="removeMember('+i+')" title="הסרה">×</button></span>';}).join("");}
+function addMember(){var inp=document.getElementById("f-member");var val=inp.value.trim();if(!val)return;if(state.draftMembers.length>=8){inp.value="";return;}state.draftMembers.push(val);inp.value="";inp.focus();renderMembers();}
+function removeMember(i){state.draftMembers.splice(i,1);renderMembers();}
+async function registerTeam(){
+  if(state.saving)return;
+  var name=document.getElementById("f-name").value.trim();
+  var errEl=document.getElementById("reg-err");
+  if(!name){errEl.textContent="צריך לבחור שם לצוות 🙂";return;}
+  errEl.textContent="";
+  var problem=document.getElementById("f-problem").value;
+  if(problem.indexOf("אחר")===0){var other=document.getElementById("f-problem-other").value.trim();problem=other?other:"אחר";}
+  var product=document.getElementById("f-product").value;
+  var tid=newTid();
+  var team={tid:tid,name:name,members:state.draftMembers.slice(),problem:problem,product:product,createdAt:Date.now()};
+  state.saving=true;var btn=document.getElementById("reg-btn");btn.disabled=true;btn.textContent="שומרת…";
+  await store.set("team:"+tid,JSON.stringify(team),true);
+  state.saving=false;btn.disabled=false;btn.textContent="שמירת הצוות";
+  document.getElementById("f-name").value="";document.getElementById("f-member").value="";document.getElementById("f-problem-other").value="";
+  state.draftMembers=[];renderMembers();document.getElementById("f-problem").selectedIndex=0;toggleOther();document.getElementById("f-product").selectedIndex=0;
+  document.getElementById("reg-ok").innerHTML='<div class="ok-toast">הצוות "'+esc(name)+'" נרשם בהצלחה! 🎉</div>';
+  setTimeout(function(){document.getElementById("reg-ok").innerHTML="";},6000);
+  await loadTeams();
+}
+
+/* ===================== teams view ===================== */
+function teamCardHTML(t){
+  var col=colorFor(t.tid),em=badgeFor(t.tid);
+  var mem=(t.members&&t.members.length)?t.members.map(esc).join(", "):"—";
+  var admin=state.admin?'<button class="btn btn-danger btn-sm" style="margin-top:10px" onclick="deleteTeam(\''+t.tid+'\')">מחיקת צוות</button>':"";
+  return '<div class="tcard"><div class="badge" style="background:'+col+'">'+em+'</div>'
+    +'<h3>'+esc(t.name)+'</h3><div class="meta">'+(t.members?t.members.length:0)+' חברות</div>'
+    +'<div class="tline"><span class="k">חברות:</span><span class="v">'+mem+'</span></div>'
+    +'<div class="tline"><span class="k">בעיה:</span><span class="v">'+esc(t.problem||"—")+'</span></div>'
+    +'<div class="tline"><span class="k">תוצר:</span><span class="v">'+esc(t.product||"—")+'</span></div>'+admin+'</div>';
+}
+function renderTeams(){
+  document.getElementById("teams-count").textContent=state.teams.length;
+  var body=document.getElementById("teams-body");
+  if(!state.teams.length){body.innerHTML='<div class="panel"><div class="empty"><div class="big">🪧</div><p>עדיין אין צוותים רשומים.<br>היו הראשונות — לחצו על "רישום צוות".</p><button class="btn btn-primary" onclick="nav(\'register\')">רישום הצוות שלי</button></div></div>';return;}
+  body.innerHTML='<div class="grid">'+state.teams.map(teamCardHTML).join("")+'</div>';
+}
+var _lastTeamsSig="";
+function teamsSig(){return state.teams.map(function(t){return t.tid;}).join("|");}
+function maybeRenderTeams(){var s=teamsSig();if(s!==_lastTeamsSig){_lastTeamsSig=s;renderTeams();}}
+
+/* ===================== peer scoring ===================== */
+async function enterScore(){
+  await loadTeams();
+  // validate my identity
+  if(state.myTid && !teamByTid(state.myTid)){ state.myTid=null; await store.del("me:team",false); }
+  await loadMyBallot();
+  renderScore();
+}
+async function pollScore(){
+  var sig=teamsSig();
+  await loadTeams();
+  if(teamsSig()!==sig){ if(state.myTid && !teamByTid(state.myTid)){state.myTid=null;} renderScore(); }
+}
+async function setMyTeam(tid){
+  state.myTid=tid; await store.set("me:team",tid,false); await loadMyBallot(); renderScore();
+}
+async function switchTeam(){ state.myTid=null; await store.del("me:team",false); state.myBallot={}; renderScore(); }
+
+function renderScore(){
+  var body=document.getElementById("score-body");
+  if(!state.teams.length){
+    body.innerHTML='<div class="panel"><div class="empty"><div class="big">🗳️</div><p>עדיין אין צוותים לנקד.<br>קודם כל הצוותים נרשמים.</p><button class="btn btn-primary" onclick="nav(\'register\')">לרישום צוות</button></div></div>';
+    return;
+  }
+  if(!state.myTid){
+    body.innerHTML='<div class="panel"><h2>מי אתן?</h2><p class="hint">בחרו את הצוות שלכן — כדי שלא תנקדו את עצמכן בטעות. כל קבוצה מנקדת מהמכשיר שלה.</p>'
+      +'<div class="pick-grid">'+state.teams.map(function(t){
+        return '<button class="pickbtn" onclick="setMyTeam(\''+t.tid+'\')"><span class="em" style="background:'+colorFor(t.tid)+'">'+badgeFor(t.tid)+'</span><span>'+esc(t.name)+'</span></button>';
+      }).join("")+'</div></div>';
+    return;
+  }
+  var me=teamByTid(state.myTid);
+  var others=state.teams.filter(function(t){return t.tid!==state.myTid;});
+  var doneCount=others.filter(function(t){return myBallotDone(t.tid);}).length;
+  var pct=others.length?Math.round(doneCount/others.length*100):0;
+  var head='<div class="youbar"><span class="em">'+badgeFor(me.tid)+'</span>'
+    +'<div><div class="lbl">אתן מנקדות בתור</div><div class="nm">'+esc(me.name)+'</div></div>'
+    +'<div class="progress-wrap"><div class="pn" id="progress">'+doneCount+' / '+others.length+' צוותים</div><div class="pbar"><i id="pbar-i" style="width:'+pct+'%"></i></div></div>'
+    +'<button class="btn btn-ghost btn-sm" onclick="switchTeam()" style="margin-inline-start:10px">החלפת צוות</button></div>';
+  var note='<div class="small-note">דרגו כל צוות אחר ב-1 עד 5 בכל קריטריון. הניקוד נשמר אוטומטית, ואפשר לשנות בכל רגע. אתן לא מנקדות את עצמכן.</div>';
+  if(!others.length){
+    body.innerHTML=head+'<div class="panel"><div class="empty"><div class="big">⌛</div><p>אין עדיין צוותים אחרים לנקד.<br>צריך עוד צוותים רשומים.</p></div></div>';
+    return;
+  }
+  body.innerHTML=head+'<div class="shead"><h2>ניקוד הצוותים האחרים</h2><span class="count">'+others.length+'</span></div>'
+    +others.map(scoreCardHTML).join("")+note;
+}
+function scoreCardHTML(t){
+  var col=colorFor(t.tid),em=badgeFor(t.tid);
+  var who=(t.members&&t.members.length)?esc(t.members.join(", ")):"—";
+  var tot=myBallotTotal(t.tid),done=myBallotDone(t.tid);
+  var sc=state.myBallot[t.tid]||{};
+  var rows=CRITERIA.map(function(c){
+    var cur=sc[c.key]||0,dots="";
+    for(var n=1;n<=5;n++){var on=(n===cur);dots+='<button class="dot'+(on?" on":"")+'" data-col="'+c.color+'"'+(on?(' style="background:'+c.color+'"'):"")+' onclick="setVote(\''+t.tid+'\',\''+c.key+'\','+n+',this)">'+n+'</button>';}
+    return '<div class="crit"><span class="cl" style="color:'+c.color+'">'+c.label+'</span><div class="scaler">'+dots+'</div></div>';
+  }).join("");
+  var tag=done?'<span class="donetag" id="done-'+t.tid+'">✓ הושלם</span>':'<span class="donetag" id="done-'+t.tid+'" style="display:none">✓ הושלם</span>';
+  return '<div class="scard"><div class="sh"><div class="em2" style="background:'+col+'">'+em+'</div>'
+    +'<div><h3>'+esc(t.name)+'</h3><div class="who">'+who+'</div>'+tag+'</div>'
+    +'<div class="tot"><div class="n" id="vtot-'+t.tid+'">'+tot+'</div><div class="l">מתוך '+MAX_TOTAL+'</div></div></div>'+rows+'</div>';
+}
+async function setVote(rated,key,val,el){
+  if(!state.myTid)return;
+  state.myBallot[rated]=state.myBallot[rated]||{};
+  state.myBallot[rated][key]=val;
+  await saveMyBallot();
+  // in-place UI update (no scroll jump)
+  var scaler=el.parentNode;
+  Array.prototype.forEach.call(scaler.children,function(b){b.classList.remove("on");b.style.background="";});
+  el.classList.add("on");el.style.background=el.getAttribute("data-col");
+  var vt=document.getElementById("vtot-"+rated);if(vt)vt.textContent=myBallotTotal(rated);
+  var dn=document.getElementById("done-"+rated);if(dn)dn.style.display=myBallotDone(rated)?"inline-flex":"none";
+  updateProgress();
+  toast("נשמר ✓");
+}
+function updateProgress(){
+  var others=state.teams.filter(function(t){return t.tid!==state.myTid;});
+  var done=others.filter(function(t){return myBallotDone(t.tid);}).length;
+  var p=document.getElementById("progress");if(p)p.textContent=done+' / '+others.length+' צוותים';
+  var i=document.getElementById("pbar-i");if(i)i.style.width=(others.length?Math.round(done/others.length*100):0)+"%";
+}
+
+/* ===================== results (aggregate peer scores) ===================== */
+function aggregate(){
+  var agg={};
+  Object.keys(state.ballots).forEach(function(rater){
+    var ballot=state.ballots[rater];if(!ballot)return;
+    Object.keys(ballot).forEach(function(rated){
+      if(rated===rater)return;
+      var sc=ballot[rated];if(!sc)return;
+      var a=agg[rated]||(agg[rated]={sums:{},counts:{},raters:{}});var any=false;
+      CRITERIA.forEach(function(c){var v=sc[c.key];if(v>=1&&v<=5){a.sums[c.key]=(a.sums[c.key]||0)+v;a.counts[c.key]=(a.counts[c.key]||0)+1;any=true;}});
+      if(any)a.raters[rater]=true;
+    });
+  });
+  var res={};
+  state.teams.forEach(function(t){
+    var a=agg[t.tid],perCrit={},total=0,raters=0;
+    CRITERIA.forEach(function(c){var avg=(a&&a.counts[c.key])?(a.sums[c.key]/a.counts[c.key]):0;perCrit[c.key]=avg;total+=avg;});
+    if(a)raters=Object.keys(a.raters).length;
+    res[t.tid]={perCrit:perCrit,total:total,raters:raters};
+  });
+  return res;
+}
+function renderResults(){
+  var body=document.getElementById("results-body");
+  if(!state.teams.length){
+    body.innerHTML='<div class="shead"><h2>תוצאות</h2></div><div class="panel"><div class="empty"><div class="big">📊</div><p>אין עדיין צוותים.</p></div></div>';
+    return;
+  }
+  var res=aggregate();
+  var ranked=state.teams.slice().sort(function(a,b){return res[b.tid].total-res[a.tid].total;});
+  var anyVotes=ranked.some(function(t){return res[t.tid].raters>0;});
+  var cards=ranked.map(function(t,i){
+    var r=res[t.tid],col=colorFor(t.tid),em=badgeFor(t.tid);
+    var pct=Math.round(r.total/MAX_TOTAL*100);
+    var g=i===0?"g1":i===1?"g2":i===2?"g3":"g0";
+    var medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":(i+1);
+    var totTxt=r.raters?r.total.toFixed(1):"—";
+    var votes=r.raters?(r.raters+' '+(r.raters===1?'הצבעה':'הצבעות')):'טרם נוקד';
+    var chips=CRITERIA.map(function(c){return '<span class="cchip" style="background:'+c.color+'">'+c.label+' '+(r.raters?r.perCrit[c.key].toFixed(1):"–")+'</span>';}).join("");
+    return '<div class="rcard'+(i===0&&r.raters?' first':'')+'">'
+      +'<div class="rhead"><div class="rank '+g+'">'+medal+'</div>'
+      +'<span class="em">'+em+'</span><div><div class="nm">'+esc(t.name)+'</div><div class="votes">'+votes+'</div></div>'
+      +'<div class="rtot"><div class="num">'+totTxt+'</div><div class="lbl">ממוצע מתוך '+MAX_TOTAL+'</div></div></div>'
+      +'<div class="bar"><i style="width:'+pct+'%;background:'+col+'"></i></div>'
+      +'<div class="cchips">'+chips+'</div></div>';
+  }).join("");
+  var admin=state.admin
+    ? '<div class="panel" style="margin-top:18px"><h2 style="font-size:18px">ניהול מורה</h2><p class="hint">פעולות אלו אינן הפיכות.</p><button class="btn btn-danger btn-sm" onclick="resetAllVotes()">איפוס כל ההצבעות</button></div>'
+    : '<div style="text-align:center;margin-top:22px"><button class="btn btn-light btn-sm" onclick="adminPrompt()">ניהול מורה 🔒</button></div>';
+  body.innerHTML='<div class="shead"><h2>תוצאות — טבלת ההובלה</h2><span class="count">'+state.teams.length+'</span><div class="spacer"></div><button class="btn btn-light btn-sm" onclick="refreshNow()">רענון 🔄</button></div>'
+    +(anyVotes?"":'<div class="small-note" style="margin-top:14px">עדיין אין הצבעות. כשהצוותים ינקדו זה את זה, התוצאות יופיעו כאן.</div>')
+    +cards
+    +'<div class="small-note">הציון של כל צוות הוא הממוצע של מה ששאר הצוותים נתנו לו, בכל קריטריון. התוצאות מתעדכנות בזמן אמת.</div>'
+    +admin;
+}
+
+/* ===================== admin ===================== */
+function adminPrompt(){
+  var v=prompt("הזינו את קוד המורה:");
+  if(v===null)return;
+  if(v.trim()===ADMIN_PIN){state.admin=true;toast("מצב מורה פעיל");if(state.view==="results")renderResults();else if(state.view==="teams")renderTeams();}
+  else toast("קוד שגוי");
+}
+async function resetAllVotes(){
+  if(!confirm("לאפס את כל ההצבעות של כל הצוותים? הפעולה אינה הפיכה."))return;
+  var keys=await store.list("ballot:",true);
+  for(var i=0;i<keys.length;i++){await store.del(keys[i],true);}
+  state.ballots={};state.myBallot={};
+  toast("כל ההצבעות אופסו");
+  await loadAll();renderResults();
+}
+async function deleteTeam(tid){
+  var t=teamByTid(tid);
+  if(!confirm('למחוק את הצוות "'+(t?t.name:"")+'"? הפעולה אינה הפיכה.'))return;
+  await store.del("team:"+tid,true);
+  await store.del("ballot:"+tid,true); // remove its outgoing votes
+  await loadTeams();
+  if(state.view==="teams")renderTeams();
+  if(state.view==="results"){await loadAllBallots();renderResults();}
+  toast("הצוות נמחק");
+}
+
+/* ===================== init ===================== */
+(async function init(){
+  fillSelects();toggleOther();renderMembers();
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"),function(t){t.addEventListener("click",function(){nav(t.getAttribute("data-v"));});});
+  var saved=await store.get("me:team",false); if(saved)state.myTid=saved;
+  await loadTeams(); _lastTeamsSig=teamsSig();
+  nav("home");
+})();
+</script>
+</body>
+</html>
